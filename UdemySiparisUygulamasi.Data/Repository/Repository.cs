@@ -54,7 +54,22 @@ namespace UdemySiparisUygulamasi.Data.Repository
 
         public T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
-            return _dbSet.FirstOrDefault();
+            IQueryable<T> query = _dbSet;
+            if (filter != null)
+            {
+                //Sorgular filterda where id==1
+                query = query.Where(filter);
+
+            }
+            if (includeProperties != null)
+            {
+                foreach (var item in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    //Her seferinde tabloyu ekliyor
+                    query = query.Include(item);
+                }
+            }
+            return query.FirstOrDefault();
         }
 
         public void Remove(T entity)
